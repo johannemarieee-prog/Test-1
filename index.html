@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>July Greenleaf Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <style>
+    :root {
+      --primary: #2e7d32;
+      --bg: #f4fdf5;
+      --text: #000;
+      --card: #ffffff;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 20px;
+      color: var(--text);
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: var(--primary);
+    }
+
+    table {
+      width: 90%;
+      margin: 40px auto;
+      border-collapse: collapse;
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background: var(--primary);
+      color: white;
+    }
+
+    .green { background-color: #e8f5e9; }
+    .yellow { background-color: #fff8e1; }
+    .red { background-color: #ffebee; }
+
+    .chart-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      padding: 20px;
+    }
+
+    .chart-container {
+      flex: 1 1 45%;
+      max-width: 45%;
+      min-width: 300px;
+      background: var(--card);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>July Greenleaf Dashboard</h1>
+
+  <!-- Overall Metrics Table -->
+  <h2>Overall Metrics Table</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Monthly Actual</th>
+        <th>Monthly Target</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Revenue</td><td>$24,101.90</td><td>$33,000</td><td class="red">Red</td></tr>
+      <tr><td>Revenue Per Employee</td><td>$4,016.98</td><td>< $5,500</td><td class="red">Red</td></tr>
+      <tr><td>New Clients</td><td>10</td><td>25</td><td class="red">Red</td></tr>
+      <tr><td>Total Appointments</td><td>230</td><td>251</td><td class="red">Red</td></tr>
+      <tr><td>Revenue Per Client</td><td>$104.79</td><td>> $102</td><td class="green">Green</td></tr>
+      <tr><td>Meta Spend</td><td>$586.44</td><td>$600</td><td class="green">Green</td></tr>
+      <tr><td>CAC</td><td>$58.64</td><td>< $45</td><td class="yellow">Yellow</td></tr>
+      <tr><td>Google Reviews</td><td>220</td><td>—</td><td class="yellow">Yellow</td></tr>
+    </tbody>
+  </table>
+
+  <!-- CHARTS GRID -->
+  <div class="chart-grid">
+    <div class="chart-container">
+      <h2>Weekly Revenue</h2>
+      <canvas id="revenueChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h2>Meta Spend by Week</h2>
+      <canvas id="metaChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h2>Gift Card Sales vs Redemptions</h2>
+      <canvas id="giftChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h2>Massage Hours per Person</h2>
+      <canvas id="massageChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    Chart.register(ChartDataLabels);
+
+    const chartTextColor = '#000';
+
+    const defaultOptions = {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: chartTextColor }
+        },
+        x: {
+          ticks: { color: chartTextColor }
+        }
+      },
+      plugins: {
+        datalabels: {
+          color: chartTextColor,
+          anchor: 'end',
+          align: 'top',
+          font: { weight: 'bold' },
+          formatter: v => `$${v}`
+        },
+        legend: {
+          labels: { color: chartTextColor }
+        },
+        tooltip: {
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          backgroundColor: '#000'
+        }
+      }
+    };
+
+    // Weekly Revenue
+    new Chart(document.getElementById('revenueChart'), {
+      type: 'bar',
+      data: {
+        labels: ['7/1–7/7', '7/8–7/14', '7/15–7/21', '7/22–7/28', '7/29–7/31'],
+        datasets: [{
+          label: 'Revenue ($)',
+          data: [3575, 4747.7, 6222.1, 6385, 3172.1],
+          backgroundColor: '#66bb6a'
+        }]
+      },
+      options: {
+        ...defaultOptions,
+        plugins: {
+          ...defaultOptions.plugins,
+          legend: { display: false }
+        }
+      }
+    });
+
+    // Meta Spend
+    new Chart(document.getElementById('metaChart'), {
+      type: 'line',
+      data: {
+        labels: ['7/1–7/7', '7/8–7/14', '7/15–7/21', '7/22–7/28'],
+        datasets: [{
+          label: 'Meta Spend ($)',
+          data: [134.65, 180.42, 141.67, 129.70],
+          borderColor: '#388e3c',
+          backgroundColor: '#c8e6c9',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: defaultOptions
+    });
+
+    // Gift Cards
+    new Chart(document.getElementById('giftChart'), {
+      type: 'line',
+      data: {
+        labels: ['7/1–7/7', '7/8–7/14', '7/15–7/21', '7/22–7/28', '7/29–7/31'],
+        datasets: [
+          {
+            label: 'Gift Card Sales',
+            data: [0, 100, 120, 470, 0],
+            borderColor: '#388e3c',
+            backgroundColor: '#c8e6c9',
+            fill: false
+          },
+          {
+            label: 'Redemptions',
+            data: [340, 320, 340, 503, 484],
+            borderColor: '#1b5e20',
+            backgroundColor: '#a5d6a7',
+            fill: false
+          }
+        ]
+      },
+      options: defaultOptions
+    });
+
+    // Massage Hours
+    new Chart(document.getElementById('massageChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Jessica', 'Lucas', 'Madalyn', 'Megan', 'Rachel', 'Ray'],
+        datasets: [
+          {
+            label: 'Total Hours',
+            data: [55, 26, 7, 39, 40, 36],
+            backgroundColor: '#81c784',
+            barPercentage: 0.5,
+            categoryPercentage: 0.6
+          },
+          {
+            label: 'Allowed Hours',
+            data: [125, 90, 52, 107, 111, 121],
+            backgroundColor: '#a5d6a7',
+            barPercentage: 0.5,
+            categoryPercentage: 0.6
+          }
+        ]
+      },
+      options: {
+        ...defaultOptions,
+        plugins: {
+          ...defaultOptions.plugins,
+          datalabels: {
+            ...defaultOptions.plugins.datalabels,
+            formatter: Math.round
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
